@@ -1,26 +1,43 @@
 % Connect to EV3
-%brick = Ev3Connectivity.connectToEv3(Config.BRICK_NAME);
+brick = Ev3Connectivity.connectToEv3(Config.BRICK_NAME);
 
 % Keyboard Configuration
 
 global key;
 InitKeyboard();
 
+prevKey = 'stop';
+
 while 1
     pause(Movements.MOVEMENT_SENSITIVITY);
     switch key
         case 'uparrow'
-            Movements.moveForward(brick);
+            if strcmp(prevKey, 'uparrow') == 0
+                Movements.moveForward(brick);
+                prevKey = 'uparrow';
+            end
         case 'downarrow'
-            Movements.moveBackward(brick);
+            if strcmp(prevKey, 'downarrow') == 0
+                Movements.moveBackward(brick);
+                prevKey = 'downarrow';
+            end
         case 'leftarrow'
-            Movements.moveLeft(brick);
+            if strcmp(prevKey, 'leftarrow') == 0
+                Movements.moveLeft(brick);
+                prevKey = 'leftarrow';
+            end
         case 'rightarrow'
-            Movements.moveRight(brick);
+            if strcmp(prevKey, 'rightarrow') == 0
+                Movements.moveRight(brick);
+                prevKey = 'rightarrow';
+            end
         case 'q'
             break;
         case 0
-            Movements.stopMovement(brick);
+            if strcmp(prevKey, 'stop') == 0
+                Movements.stopMovement(brick);
+                prevKey = 'stop';
+            end
     end
 end
 

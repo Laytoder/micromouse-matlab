@@ -1,6 +1,6 @@
-qclassdef Movements
+classdef Movements
     properties (Constant = true)
-        MOVEMENT_SENSITIVITY = 0.01;
+        MOVEMENT_SENSITIVITY = 0.1; % in seconds
     end
     methods (Static)
         function moveForward(brick)
