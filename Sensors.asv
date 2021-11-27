@@ -1,0 +1,36 @@
+classdef Sensors
+    methods (Static)
+        function color = getColor(brick)
+            brick.SetColorMode(2, 2);
+            color = brick.ColorCode(Config.LIGHT_SENSOR);
+        end
+        
+        function dist = getLeftDist(brick)
+            dist = brick.UltrasonicDist(Config.LEFT_ULTRASONIC);
+        end
+        
+        function dist = getRightDist(brick)
+            dist = brick.UltrasonicDist(Config.RIGHT_ULTRASONIC);
+        end
+        
+        function leftWall = isLeftWall(brick)
+            leftWall = 0;
+            leftDist = getLeftDist(brick); % in cm
+            if(leftDist > 50)
+                leftWall = 1;
+            end
+        end
+        
+        function rightWall = isRightWall(brick)
+            rightWall = 0;
+            leftDist = getLeftDist(brick); % in cm
+            if(leftDist > 50)
+                leftWall = 1;
+            end
+        end
+        
+        function frontWall = isFrontWall(brick)
+            frontWall = brick.TouchPressed(Config.FRONT_TOUCH);
+        end
+    end
+end

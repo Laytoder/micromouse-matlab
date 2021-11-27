@@ -9,12 +9,10 @@ classdef Ev3Connectivity
             fprintf('The battery is charged %s\n', brick.GetBattLevel());
         end
         
-        function isDisconnected = disconnectEv3(brickName)
+        function disconnectEv3(brickName)
             DisconnectBrick(brickName);
             % Logging the Successfully Disconnecting notification.
             fprintf('Successfully disconnected from %s EV3 brick', brickName);
-            % Setting the disconnected flag as true
-            isDisconnected = true;
         end
     end
 end

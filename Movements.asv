@@ -9,11 +9,15 @@ classdef Movements
     end
     methods (Static)
         function moveForward(brick)
-            % Both Left and Right Motors are moved in the forward direction
-            % to move forward
-            brick.MoveMotor(strcat(Config.LEFT_MOTOR, Config.RIGHT_MOTOR), Movements.DEFAULT_MOVEMENT_SPEED);
-            % Logging the movement.
-            fprintf('Moving Forward\n');
+            if isMovingForward == 0
+                % Both Left and Right Motors are moved in the forward direction
+                % to move forward
+                brick.MoveMotor(strcat(Config.LEFT_MOTOR, Config.RIGHT_MOTOR), Movements.DEFAULT_MOVEMENT_SPEED);
+                % Logging the movement.
+                fprintf('Moving Forward\n');
+                % Flagging that the robot is moving forward
+                
+            end
         end
         
         function moveBackward(brick)
