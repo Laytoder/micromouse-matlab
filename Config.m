@@ -6,7 +6,7 @@ classdef Config
         LIFT_MOTOR = 'A'
         LIGHT_SENSOR = 1
         LEFT_ULTRASONIC = 2
-        FRONT_ULTRASONIC = 3
-        RIGHT_ULTRASONIC = 4
+        FRONT_ULTRASONIC = 4
+        RIGHT_ULTRASONIC = 3
     end
 end

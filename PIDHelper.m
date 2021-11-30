@@ -1,42 +1,37 @@
 classdef PIDHelper
     properties (Constant = true)
-        % in centimeters(cm)
-        CELL_WIDTH = 58;
-        CELL_LENGTH = 60;
-        BOT_WIDTH = 14;
         KP = 2;
         KI = 0;
         KD = 0;
     end
     methods (Static)
+        function init()
+            global previousError;
+            global I;
+            global rightMotorSpeed;
+            global leftMotorSpeed;
+            previousError = 0;
+            I = 0;
+            rightMotorSpeed = Movements.DEFAULT_MOVEMENT_SPEED;
+            leftMotorSpeed = Movements.DEFAULT_MOVEMENT_SPEED;
+        end
+        
         function stabilizeMovement(brick)
-            persistent previousError;
-            if isEmpty(previousError)
-                previousError = 0;
-            end
+            global previousError;
             
             % Integral Error
-            persistent I;
-            if isEmpty(I)
-                I = 0;
-            end
+            global I;
             
             % Right Motor Speed
-            persistent rightMotorSpeed;
-            if isEmpty(rightMotorSpeed)
-                rightMotorSpeed = Movements.DEFAULT_MOVEMENT_SPEED;
-            end
+            global rightMotorSpeed;
             
             % Left Motor Speed
-            persistent leftMotorSpeed;
-            if isEmpty(leftMotorSpeed)
-                leftMotorSpeed = Movements.DEFAULT_MOVEMENT_SPEED;
-            end
+            global leftMotorSpeed;
             
             error = Sensors.getRightDist(brick) - Sensors.getLeftDist(brick);
             P = error * PIDHelper.KP;
             I = (I + error) * PIDHelper.KI;
-            D = (error - previous_error) * PIDHelper.KD;
+            D = (error - previousError) * PIDHelper.KD;
             
             total = P + I + D;
             

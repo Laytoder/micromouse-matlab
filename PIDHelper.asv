@@ -1,35 +1,72 @@
 classdef PIDHelper
     properties (Constant = true)
-        % in centimeters(cm)
-        CELL_WIDTH = 58;
-        CELL_LENGTH = 60;
-        BOT_WIDTH = 14;
-        KP = 16;
+        KP = 2;
         KI = 0;
         KD = 0;
     end
     methods (Static)
-        function stabilizeMovement(brick)
-            persistent previousError;
-            if isEmpty(previousError)
+        function init()
+            global previousError;
+            global I;
+            global rightMotorSpeed;
+            global leftMotorSpeed;
+            previousError = 0;
+            I = 0;
+            rightMotorSpeed = Movements.DEFAULT_MOVEMENT_SPEED;
+            leftMotorSpeed = Movements.DEFAULT_MOVEMENT_SPEED;
+        end
+        
+        function stabilizeMovement(brick, reset)
+            global previousError;
+            if isempty(previousError)
                 previousError = 0;
             end
+            
             % Integral Error
-            persistent I;
-            if isEmpty(I)
+            global I;
+            if isempty(I)
                 I = 0;
             end
-            % Right Motor Speed
-            persistent rightMotorSpeed;
-            if isEmpty(rightMotorSpeed)
             
+            % Right Motor Speed
+            global rightMotorSpeed;
+   
+            
+            % Left Motor Speed
+            global leftMotorSpeed;
+            
+            if reset
+                previousError = 0;
+                I = 0;
+                rightMotorSpeed = Movements.DEFAULT_MOVEMENT_SPEED;
+                leftMotorSpeed = Movements.DEFAULT_MOVEMENT_SPEED;
             end
+            
             error = Sensors.getRightDist(brick) - Sensors.getLeftDist(brick);
             P = error * PIDHelper.KP;
             I = (I + error) * PIDHelper.KI;
             D = (error - previous_error) * PIDHelper.KD;
             
             total = P + I + D;
+            
+            leftMotorSpeed = leftMotorSpeed + total;
+            leftMotorSpeed = constrain(leftMotorSpeed, 0, Movements.DEFAULT_MOVEMENT_SPEED);
+            
+            rightMotorSpeed = rightMotorSpeed - total;
+            rightMotorSpeed = constrain(rightMotorSpeed, 0, Movements.DEFAULT_MOVEMENT_SPEED);
+            
+            Movements.changeLeftMotorSpeed(brick, leftMotorSpeed);
+            Movements.changeRightMotorSpeed(brick, rightMotorSpeed);
+        end
+        
+        function constrained = constrain(value, lower, upper)
+            if value > upper
+                constrained = upper;
+            elseif value < lower
+                constrained = lower;
+            else
+                constrained = value;
+            end
         end
     end
 end

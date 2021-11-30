@@ -1,0 +1,123 @@
+classdef TestScripts
+    methods (Static)
+        % Front Wall Detection Test
+        % Calibrate the WALL_DETECTION_ERROR_OFFSET here
+        function frontWallDetectionTest(brick)
+            while 1
+                if Sensors.isFrontWall(brick) == 1
+                    Movements.stopMovement(brick);
+                    break;
+                else
+                    Movements.moveForward(brick);
+                end
+            end
+        end
+        
+        % Left Turn Test
+        % Calibrate the STOPPING_RELAXATION_TIME and TURN_RELAXATION_TIME
+        % here
+        function leftTurnTest(brick)
+            Movements.turnLeft(brick);
+        end
+        
+        % Left Turn While Navigation Test(Place the bot near any left turn)
+        % Left-Hand Algorithm Sequence 1 Test
+        % Calibrate PRE_TURN_RELAXATION_TIME here
+        function leftTurnWhileNavigationTest(brick)
+            while 1
+                if Sensors.isLeftWall(brick) == 0
+                    Movements.turnLeft(brick);
+                    break;
+                else
+                    Movements.moveForward(brick);
+                end
+            end
+        end
+        
+        % Right Turn Test
+        % Re-calibrate above constants for errors
+        function rightTurn(brick)
+            Movements.turnRight(brick);
+        end
+        
+        % Right Turn While Navigation Test(Place the bot near a right turn
+        % such that there is a left and front wall)
+        % Left-Hand Algorithm Sequence 2 Test
+        % Re-calibrate above constants for errors
+        function turnRightAfterWallDetection(brick)
+            while 1
+                if Sensors.isLeftWall(brick) == 0
+                    Movements.turnLeft(brick);
+                elseif Sensors.isFrontWall(brick) == 0
+                    Movements.moveForward(brick);
+                elseif Sensors.isRightWall(brick) == 0
+                    Movements.turnRight(brick);
+                    break;
+                else
+                    Movements.moveForward(brick);
+                end
+            end
+        end
+        
+        % Back Turn Test
+        % Calibrate BACK_TURN_RELAXATION_TIME here
+        function turnBack(brick)
+            Movements.turnBack(brick);
+        end
+        
+        % Back Turn While Navigation Test(Place the bot near any dead end)
+        % Left-Hand Algorithm Sequence 3 Test
+        % Re-calibrate above constants for errors
+        function turnBackOnDeadEnd(brick)
+            prevMotion = 'stop';
+            while 1
+                if Sensors.isLeftWall(brick) == 0
+                    if strcmp(prevMotion, 'left') == 0
+                        Movements.turnLeft(brick);
+                        prevMotion = 'left';
+                    end
+                elseif Sensors.isFrontWall(brick) == 0
+                    if strcmp(prevMotion, 'forward') == 0
+                        Movements.moveForward(brick);
+                        prevMotion = 'forward';
+                    end
+                elseif Sensors.isRightWall(brick) == 0
+                    if strcmp(prevMotion, 'right') == 0
+                        Movements.turnRight(brick);
+                        prevMotion = 'right';
+                    end
+                else
+                    Movements.turnBack(brick);
+                    break;
+                end
+            end
+        end
+        
+        function stopOnRedAndMoveAhead(brick)
+            prevMotion = 'stop';
+            reset = 1;
+            while 1
+                ColorHelper.handleMovementBasedOnColors(brick, reset);
+                if strcmp(prevMotion, 'forward') == 0
+                    Movements.moveForward(brick);
+                    prevMotion = 'forward';
+                end
+                reset = 0;
+            end
+        end
+        
+        function globalTest()
+            global x;
+            if isempty(x)
+                x = 10;
+            end
+            disp(x);
+        end
+        
+        function globalTest2(m)
+            global x;
+            disp(x);
+            x = m;
+        end
+    end
+end

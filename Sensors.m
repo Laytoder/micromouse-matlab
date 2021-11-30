@@ -1,4 +1,13 @@
 classdef Sensors
+    properties (Constant = true)
+        % in centimeters(cm)
+        CELL_WIDTH = 58;
+        BOT_WIDTH = 15;
+        % To be measured
+        FRONT_ULTRASONIC_WHEEL_OFFSET = 1;
+        WALL_DETECTION_ERROR_OFFSET = 19;
+        LEFT_RIGHT_WALL_DETECTION_ERROR_OFFSET = 2;
+    end
     methods (Static)
         function color = getColor(brick)
             brick.SetColorMode(2, 2);
@@ -11,6 +20,7 @@ classdef Sensors
         
         function dist = getRightDist(brick)
             dist = brick.UltrasonicDist(Config.RIGHT_ULTRASONIC);
+            disp(dist);
         end
         
         function dist = getFrontDist(brick)
@@ -18,25 +28,28 @@ classdef Sensors
         end
         
         function leftWall = isLeftWall(brick)
-            leftWall = 0;
-            leftDist = getLeftDist(brick); % in cm
-            if(leftDist > 50)
-                leftWall = 1;
+            LEFT_RIGHT_WALL_DETECTION_OFFSET = ((Sensors.CELL_WIDTH - Sensors.BOT_WIDTH) / 2) + Sensors.LEFT_RIGHT_WALL_DETECTION_ERROR_OFFSET;
+            leftWall = 1;
+            leftDist = Sensors.getLeftDist(brick); % in cm
+            if(leftDist > LEFT_RIGHT_WALL_DETECTION_OFFSET)
+                leftWall = 0;
             end
         end
         
         function rightWall = isRightWall(brick)
-            rightWall = 0;
-            rightDist = getRightDist(brick); % in cm
-            if(rightDist > 50)
-                rightWall = 1;
+            LEFT_RIGHT_WALL_DETECTION_OFFSET = ((Sensors.CELL_WIDTH - Sensors.BOT_WIDTH) / 2) + Sensors.LEFT_RIGHT_WALL_DETECTION_ERROR_OFFSET;
+            rightWall = 1;
+            rightDist = Sensors.getRightDist(brick); % in cm
+            if(rightDist > LEFT_RIGHT_WALL_DETECTION_OFFSET)
+                rightWall = 0;
             end
         end
         
         function frontWall = isFrontWall(brick)
+            FRONT_WALL_DETECTION_OFFSET = ((Sensors.CELL_WIDTH + Sensors.BOT_WIDTH) / 2 - Sensors.FRONT_ULTRASONIC_WHEEL_OFFSET) + Sensors.WALL_DETECTION_ERROR_OFFSET;
             frontWall = 0;
-            frontDist = getFrontDist(brick); % in cm
-            if(frontDist > 50)
+            frontDist = Sensors.getFrontDist(brick); % in cm
+            if frontDist <= FRONT_WALL_DETECTION_OFFSET
                 frontWall = 1;
             end
         end
