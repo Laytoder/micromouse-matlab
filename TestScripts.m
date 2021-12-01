@@ -3,6 +3,8 @@ classdef TestScripts
         % Front Wall Detection Test
         % Calibrate the WALL_DETECTION_ERROR_OFFSET here
         function frontWallDetectionTest(brick)
+            Movements.init();
+            Sensors.init(brick);
             while 1
                 if Sensors.isFrontWall(brick) == 1
                     Movements.stopMovement(brick);
@@ -17,6 +19,7 @@ classdef TestScripts
         % Calibrate the STOPPING_RELAXATION_TIME and TURN_RELAXATION_TIME
         % here
         function leftTurnTest(brick)
+            Movements.init();
             Movements.turnLeft(brick);
         end
         
@@ -24,6 +27,8 @@ classdef TestScripts
         % Left-Hand Algorithm Sequence 1 Test
         % Calibrate PRE_TURN_RELAXATION_TIME here
         function leftTurnWhileNavigationTest(brick)
+            Movements.init();
+            Sensors.init(brick);
             while 1
                 if Sensors.isLeftWall(brick) == 0
                     Movements.turnLeft(brick);
@@ -37,6 +42,7 @@ classdef TestScripts
         % Right Turn Test
         % Re-calibrate above constants for errors
         function rightTurn(brick)
+            Movements.init();
             Movements.turnRight(brick);
         end
         
@@ -45,6 +51,8 @@ classdef TestScripts
         % Left-Hand Algorithm Sequence 2 Test
         % Re-calibrate above constants for errors
         function turnRightAfterWallDetection(brick)
+            Movements.init();
+            Sensors.init(brick);
             while 1
                 if Sensors.isLeftWall(brick) == 0
                     Movements.turnLeft(brick);
@@ -62,6 +70,7 @@ classdef TestScripts
         % Back Turn Test
         % Calibrate BACK_TURN_RELAXATION_TIME here
         function turnBack(brick)
+            Movements.init();
             Movements.turnBack(brick);
         end
         
@@ -69,6 +78,8 @@ classdef TestScripts
         % Left-Hand Algorithm Sequence 3 Test
         % Re-calibrate above constants for errors
         function turnBackOnDeadEnd(brick)
+            Movements.init();
+            Sensors.init(brick);
             while 1
                 if Sensors.isLeftWall(brick) == 0
                     Movements.turnLeft(brick);
@@ -87,6 +98,7 @@ classdef TestScripts
         % Navigate the bot to the next color position by lifting
         function checkBehaviorBasedOnColors(brick)
             Movements.init();
+            Sensors.init(brick);
             ColorHelper.init();
             while 1
                 ColorHelper.handleMovementBasedOnColors(brick);

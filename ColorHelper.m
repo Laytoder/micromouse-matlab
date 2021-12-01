@@ -26,12 +26,8 @@ classdef ColorHelper
                     % Yellow color case
                     if shouldDetect
                         Movements.stopMovement(brick);
-                        % Pause for stop movement to complete
-                        pause(0.5);
                         % Drop the chair
                         Movements.drop(brick);
-                        % Wait for dropping to complete
-                        pause(5);
                         hasDropped = 1;
                         shouldDetect = 0;
                     end
@@ -52,8 +48,6 @@ classdef ColorHelper
                         pause(10);
                         % Lift the chair
                         Movements.lift(brick);
-                        % Wait for lifting to complete
-                        pause(5);
                         shouldDetect = 0;
                     end
                 otherwise

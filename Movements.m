@@ -3,7 +3,8 @@ classdef Movements
         MOVEMENT_SENSITIVITY = 0.1; % in seconds
         DEFAULT_MOVEMENT_SPEED = 50;
         DEFAULT_TURN_SPEED = 25;
-        LIFT_SPEED = 20;
+        LIFT_SPEED = 5;
+        LIFT_ANGLE = 10;
         SPEED_CHANGE_THRESHOLD = 3;
         STOPPING_RELAXATION_TIME = 0.5; % in seconds
         TURN_RELAXATION_TIME = 1.8; % in seconds
@@ -24,24 +25,24 @@ classdef Movements
         
         function moveForward(brick)
             global prevMotion;
-            if strcm(prevMotion, 'forward') == 0
+            if strcmp(prevMotion, 'forward') == 0
+                % Logging the movement.
+                fprintf('Moving Forward\n');
                 % Both Left and Right Motors are moved in the forward direction
                 % to move forward
                 brick.MoveMotor(strcat(Config.LEFT_MOTOR, Config.RIGHT_MOTOR), Movements.DEFAULT_MOVEMENT_SPEED);
-                % Logging the movement.
-                fprintf('Moving Forward\n');
                 prevMotion = 'forward';
             end
         end
         
         function moveBackward(brick)
             global prevMotion;
-            if strcm(prevMotion, 'backward') == 0
+            if strcmp(prevMotion, 'backward') == 0
+                % Logging the movement.
+                fprintf('Moving Backward\n');
                 % Both Left and Right Motors are moved in the backward direction
                 % to move backward
                 brick.MoveMotor(strcat(Config.LEFT_MOTOR, Config.RIGHT_MOTOR), Movements.DEFAULT_MOVEMENT_SPEED * -1);
-                % Logging the movement.
-                fprintf('Moving Backward\n');
                 prevMotion = 'backward';
             end
         end
@@ -60,7 +61,7 @@ classdef Movements
         
         function turnLeft(brick)
             global prevMotion;
-            if strcm(prevMotion, 'leftTurn') == 0
+            if strcmp(prevMotion, 'leftTurn') == 0
                 % Logging the movement.
                 fprintf('Turning Left\n');
                 % Only used for left turns because left turns can be detected
@@ -68,13 +69,15 @@ classdef Movements
                 % turning point
                 pause(Movements.PRE_TURN_RELAXATION_TIME);
                 % Stop all movement before turning
-                Movements.stopMovement(brick);
+                brick.StopMotor(strcat(Config.LEFT_MOTOR, Config.RIGHT_MOTOR), 'Brake');
+                pause(Movements.STOPPING_RELAXATION_TIME);
+                % Main turning
                 brick.MoveMotor(Config.RIGHT_MOTOR, Movements.DEFAULT_TURN_SPEED);
                 pause(Movements.TURN_RELAXATION_TIME);
+                % Stop motor
                 brick.StopMotor(Config.RIGHT_MOTOR, 'Brake');
                 % Let the movement completely stop so pause
                 pause(Movements.STOPPING_RELAXATION_TIME);
-                fprintf('Movement Complete\n');
                 prevMotion = 'leftTurn';
             end
         end
@@ -93,17 +96,19 @@ classdef Movements
         
         function turnRight(brick)
             global prevMotion;
-            if strcm(prevMotion, 'rightTurn') == 0
+            if strcmp(prevMotion, 'rightTurn') == 0
                 % Logging the movement.
                 fprintf('Turning Right\n');
                 % Stop all movement before turning
-                Movements.stopMovement(brick);
+                brick.StopMotor(strcat(Config.LEFT_MOTOR, Config.RIGHT_MOTOR), 'Brake');
+                pause(Movements.STOPPING_RELAXATION_TIME);
+                % Main turning
                 brick.MoveMotor(Config.LEFT_MOTOR, Movements.DEFAULT_TURN_SPEED);
                 pause(Movements.TURN_RELAXATION_TIME);
+                % Stop Motor
                 brick.StopMotor(Config.LEFT_MOTOR, 'Brake');
                 % Let the movement completely stop so pause
                 pause(Movements.STOPPING_RELAXATION_TIME);
-                fprintf('Movement Complete\n');
                 prevMotion = 'rightTurn';
             end
         end
@@ -112,39 +117,47 @@ classdef Movements
         
         function turnBack(brick)
             global prevMotion;
-            if strcm(prevMotion, 'backTurn') == 0
+            if strcmp(prevMotion, 'backTurn') == 0
                 % Logging the movement.
                 fprintf('Turning Back\n');
                 % Stop all movement before turning
-                stopMovement(brick);
+                brick.StopMotor(strcat(Config.LEFT_MOTOR, Config.RIGHT_MOTOR), 'Brake');
+                pause(Movements.STOPPING_RELAXATION_TIME);
+                % Main Turning
                 brick.MoveMotor(Config.LEFT_MOTOR, Movements.DEFAULT_TURN_SPEED);
                 brick.MoveMotor(Config.RIGHT_MOTOR, Movements.DEFAULT_TURN_SPEED * -1);
                 pause(Movements.BACK_TURN_RELAXATION_TIME);
-                stopMovement(brick);
-                fprintf('Movement Complete\n');
+                % Stop motors
+                brick.StopMotor(strcat(Config.LEFT_MOTOR, Config.RIGHT_MOTOR), 'Brake');
+                % Let the movement completely stop so pause
+                pause(Movements.STOPPING_RELAXATION_TIME);
                 prevMotion = 'backTurn';
             end
         end
         
         function lift(brick)
-            % Both Left and Right Motors are moved in the backward direction
-            % to move backward
-            brick.MoveMotorAngleRel(Config.LIFT_MOTOR, 1, Movements.LIFT_SPEED);
             % Logging the movement.
             fprintf('Lifting\n');
+            % Both Left and Right Motors are moved in the backward direction
+            % to move backward
+            brick.MoveMotorAngleRel(Config.LIFT_MOTOR, Movements.LIFT_SPEED, Movements.LIFT_ANGLE);
+            % Wait for the motion to complete
+            brick.WaitForMotor(Config.LIFT_MOTOR);
         end
         
         function drop(brick)
+            % Logging the movement.
+            fprintf('Dropping\n');
             % Both Left and Right Motors are moved in the backward direction
             % to move backward
-            brick.MoveMotorAngleRel(Config.LIFT_MOTOR, 1, Movements.LIFT_SPEED * -1);
-            % Logging the movement.
-            fprintf('Lifting\n');
+            brick.MoveMotorAngleRel(Config.LIFT_MOTOR, Movements.LIFT_SPEED, Movements.LIFT_ANGLE * -1);
+            % Wait for the motion to complete
+            brick.WaitForMotor(Config.LIFT_MOTOR);
         end
         
         function stopMovement(brick)
             global prevMotion;
-            if strcm(prevMotion, 'stop') == 0
+            if strcmp(prevMotion, 'stop') == 0
                 % Logging the movement.
                 fprintf('Stopping Motors\n');
                 % Stopping Both Wheel Motors

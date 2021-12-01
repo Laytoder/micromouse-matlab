@@ -1,7 +1,8 @@
 classdef NavigationHelper
     methods (Static)
-        function Navigate(brick)
+        function navigate(brick)
             Movements.init();
+            Sensors.init(brick);
             ColorHelper.init();
             PIDHelper.init();
             while 1
@@ -26,7 +27,7 @@ classdef NavigationHelper
                 end
                 
                 % Stabilize movement using PID control
-                PIDHelper.stabilizeMovement(brick);
+                %PIDHelper.stabilizeMovement(brick);
             end
         end
     end
